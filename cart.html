@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KK Intimates — Your Cart</title>
+  <link rel="icon" type="image/png" href="images/KK INT.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- 🔝 Navigation -->
+  <nav class="topbar">
+    <a href="index.html"><img class="logo-top" src="images/KK INT.png" alt="Logo"></a>
+    <a href="cart.html" class="cart-icon">
+      🛒 <span id="cartCount">0</span>
+    </a>
+  </nav>
+  
+  <!-- 🛍 Cart Container -->
+  <div class="cart-container">
+    <h1>Your Shopping Cart</h1>
+    <div id="cartItems" class="cart-items"></div>
+
+    <div class="cart-summary">
+      <h2>Total: KES <span id="cartTotal">0</span></h2>
+      <button class="checkout-btn" id="checkoutBtn">Proceed to Checkout</button>
+    </div>
+  </div>
+
+  <script>
+    // Load cart
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    function updateCartCount() {
+      const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+      document.getElementById("cartCount").textContent = count;
+    }
+
+    function renderCart() {
+      const cartItems = document.getElementById("cartItems");
+      cartItems.innerHTML = "";
+
+      if (cart.length === 0) {
+        cartItems.innerHTML = "<p class='empty'>Your cart is empty.</p>";
+        document.getElementById("cartTotal").textContent = "0";
+        updateCartCount();
+        return;
+      }
+
+      let total = 0;
+      cart.forEach((item, index) => {
+        const subtotal = item.quantity * parseInt(item.price);
+        total += subtotal;
+
+        const div = document.createElement("div");
+        div.classList.add("cart-item");
+        div.innerHTML = `
+          <img src="${item.img}" alt="${item.name}">
+          <div class="item-info">
+            <h3>${item.name}</h3>
+            <p>KES ${item.price}</p>
+            <div class="quantity-controls">
+              <button onclick="changeQuantity(${index}, -1)">−</button>
+              <span>${item.quantity}</span>
+              <button onclick="changeQuantity(${index}, 1)">+</button>
+            </div>
+            <p class="subtotal">Subtotal: KES ${subtotal}</p>
+          </div>
+          <button class="remove-btn" onclick="removeItem(${index})">Remove</button>
+        `;
+        cartItems.appendChild(div);
+      });
+
+      document.getElementById("cartTotal").textContent = total;
+      updateCartCount();
+    }
+
+    function changeQuantity(index, delta) {
+      cart[index].quantity += delta;
+      if (cart[index].quantity <= 0) cart.splice(index, 1);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      renderCart();
+    }
+
+    function removeItem(index) {
+      cart.splice(index, 1);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      renderCart();
+    }
+
+    document.getElementById("checkoutBtn").addEventListener("click", () => {
+      if (cart.length === 0) {
+        alert("Your cart is empty!");
+        return;
+      }
+      const total = document.getElementById("cartTotal").textContent;
+      alert(`Proceeding to checkout.\nTotal: KES ${total}\nYou can later connect M-Pesa or card payment here.`);
+    });
+
+    renderCart();
+  </script>
+</body>
+</html>

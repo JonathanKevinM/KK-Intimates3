@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KK Intimates — Product</title>
+  <link rel="icon" type="image/png" href="images/KK INT.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="topbar">
+    <a href="index.html"><img class="logo-top" src="images/KK INT.png" alt="Logo"></a>
+<a href="cart.html" class="cart-icon">
+      🛒 <span id="cartCount">0</span>  </nav>
+
+  <div class="product-detail">
+    <img id="productImg" src="" alt="Product">
+    <div class="detail-info">
+      <h1 id="productName"></h1>
+      <p id="productDesc"></p>
+      <h3 id="productPrice"></h3>
+
+      <!-- Quantity Selector -->
+      <div class="quantity-control">
+        <button id="minusBtn">−</button>
+        <input type="number" id="quantity" value="1" min="1">
+        <button id="plusBtn">+</button>
+      </div>
+
+      <div class="btn-group">
+        <button class="add-btn" id="addCartBtn">Add to Cart</button>
+        <button class="pay-btn" id="buyNowBtn">Buy it Now</button>
+      </div>
+    </div>
+  </div>
+
+  <section class="similar">
+    <h2>Similar Products</h2>
+    <div class="product-grid" id="similarProducts"></div>
+  </section>
+
+  <script>
+    // Parse product info from URL
+    const params = new URLSearchParams(window.location.search);
+    const name = params.get("name");
+    const price = params.get("price");
+    const img = params.get("img");
+    const desc = params.get("desc");
+    const category = params.get("category");
+
+    // Set product info
+    document.getElementById("productName").textContent = name;
+    document.getElementById("productPrice").textContent = "KES " + price;
+    document.getElementById("productDesc").textContent = desc;
+    document.getElementById("productImg").src = img;
+
+    // Quantity adjustment
+    const quantityInput = document.getElementById("quantity");
+    document.getElementById("plusBtn").addEventListener("click", () => {
+      quantityInput.value = parseInt(quantityInput.value) + 1;
+    });
+    document.getElementById("minusBtn").addEventListener("click", () => {
+      if (quantityInput.value > 1) {
+        quantityInput.value = parseInt(quantityInput.value) - 1;
+      }
+    });
+
+    // Load and update cart count
+    function updateCartCount() {
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      document.getElementById("cartCount").textContent = cart.length;
+    }
+    updateCartCount();
+
+    // Add to Cart function
+    document.getElementById("addCartBtn").addEventListener("click", () => {
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const quantity = parseInt(quantityInput.value);
+
+      // Check if item exists
+      const existing = cart.find(item => item.name === name);
+      if (existing) {
+        existing.quantity += quantity;
+      } else {
+        cart.push({ name, price, img, desc, quantity });
+      }
+
+      localStorage.setItem("cart", JSON.stringify(cart));
+      updateCartCount();
+      alert(`${name} added to your cart.`);
+    });
+
+    // Buy Now function
+    document.getElementById("buyNowBtn").addEventListener("click", () => {
+      const total = parseInt(price) * parseInt(quantityInput.value);
+      alert(`You chose to buy ${quantityInput.value} x ${name}.\nTotal: KES ${total}\nProceeding to M-Pesa checkout...`);
+      // You can later integrate an M-Pesa API here
+    });
+
+    // Similar product groups
+    const allProducts = {
+      watches: [
+        {name: "Classic Silver Watch", price: "7200", img: "images/Luxury Men’s Watch.jpg", desc: "Elegant timepiece for every occasion."},
+        {name: "Gold Chrono Watch", price: "9500", img: "images/Watches/CRRJU Blue.jpg", desc: "Luxury gold-plated chronograph watch."},
+        {name: "Rolex Black Leather", price: "6000", img: "images/Watches/Rolex Black Leather.jpg", desc: "Durable Official sports watch."},
+        {name: "Rolex Blue Leather", price: "7200", img: "images/Watches/Rolex Blue Leather.jpg", desc: "Elegant timepiece for every occasion."},
+        {name: "Rolex Siler Golden", price: "9500", img: "images/Watches/Rolex Siler Golden.jpg", desc: "Luxury gold-plated chronograph watch."},
+       ],
+      mens_perfumes: [
+        {name: "Dior Sauvage", price: "14500", img: "images/Dior Sauvage.jpg", desc: "Fresh, spicy, and woody fragrance."},
+        {name: "Armani Code", price: "1500", img: "images/beauty/perfumes/Armani Code.jpg", desc: "Bold and sensual fragrance."},
+        {name: "Dior Homme", price: "14500", img: "images/beauty/perfumes/Dior Homme.jpg", desc: "Fresh, spicy, and woody fragrance."},
+        {name: "Polo Blue", price: "1500", img: "images/beauty/perfumes/Polo Blue.jpg", desc: "Bold and sensual fragrance."},
+        {name: "The Most Wanted", price: "1800", img: "images/beauty/perfumes/The Most Wanted.jpg", desc: "Classic masculine fragrance."},
+        {name: "Versace Eros", price: "1800", img: "images/beauty/perfumes/Versace Eros.jpg", desc: "Classic masculine fragrance."},
+      ],
+      womens_perfumes: [
+        {name: "YSL Black Opium", price: "12000", img: "images/Yves Saint Laurent Black Opium.jpg", desc: "Bold and sensual fragrance for women."},
+        {name: "Coco Chanel", price: "11500", img: "images/beauty/perfumes/Coco Chanel.jpg", desc: "Floral and elegant feminine scent."},
+        {name: "Jadore Dior", price: "13000", img: "images/beauty/perfumes/Jadore Dior.jpg", desc: "Romantic floral perfume for modern women."},
+        {name: "My Way Armani", price: "13000", img: "images/beauty/perfumes/My Way Armani.jpg", desc: "Romantic floral perfume for modern women."},
+        {name: "La Vile est Belle", price: "13000", img: "images/beauty/perfumes/La Vile est Belle.jpg", desc: "Romantic floral perfume for modern women."},
+
+      ],
+      lipstick: [
+        {name: "Fenty Lipstick", price: "1000", img: "images/beauty/lipgross/Penty Lipstick.jpg", desc: "Rich pigment with smooth finish."},
+        {name: "Flawless Full Coverage", price: "1200", img: "images/beauty/lipgross/Flawsless Full Cverage.jpg", desc: "Long-lasting full-coverage lipstick."},
+        {name: "Huda Beauty Lipstick", price: "1500", img: "images/beauty/lipgross/Huda Beauty Lipstick.jpg", desc: "Matte red perfection for all skin tones."},
+        {name: "Penty Beuaty Muti", price: "1000", img: "images/beauty/lipgross/Penty Beuaty Muti .jpg", desc: "Rich pigment with smooth finish."},
+        {name: "Penty Beuaty", price: "1200", img: "images/beauty/lipgross/Penty Beuaty.jpg", desc: "Long-lasting full-coverage lipstick."},
+        {name: "Phoera", price: "1500", img: "images/beauty/lipgross/Phoera.jpg", desc: "Matte red perfection for all skin tones."},
+        {name: "tarter", price: "1000", img: "images/beauty/lipgross/tarter.jpg", desc: "Rich pigment with smooth finish."},
+        {name: "The Saem", price: "1200", img: "images/beauty/lipgross/The Saem.jpg", desc: "Long-lasting full-coverage lipstick."},
+        {name: "Zeesea", price: "1500", img: "images/beauty/lipgross/Zeesea.jpg", desc: "Matte red perfection for all skin tones."},
+
+      ],
+      creames: [
+        {name: "Milani Contour", price: "2500", img: "images/beauty/Milani Contour.jpg", desc: "Flawless contour cream with smooth blend."},
+        {name: "BB Beauty Creame", price: "900", img: "images/beauty/BB Beauty Creame.jpg", desc: "Moisturizing and brightening formula."},
+        {name: "Loreal", price: "3500", img: "iimages/beauty/Loreal.jpg", desc: "Lightweight beauty cream for natural glow."},
+        {name: "BB Beauty Creame", price: "900", img: "images/beauty/BB Beauty Creame.jpg", desc: "Moisturizing and brightening formula."},
+        {name: "Loreal", price: "3500", img: "images/beauty/Loreal.jpg", desc: "Lightweight beauty cream for natural glow."},
+        {name: "BB Beauty Creame", price: "900", img: "images/beauty/Milani Beauty Creame.jpg", desc: "Moisturizing and brightening formula."},
+
+      ],
+      eyeliner: [
+        {name: "Toplash Eyeliner", price: "1800", img: "images/beauty/eyeliner/Toplash Eyeliner.jpg", desc: "Precision waterproof eyeliner."},
+        {name: "Huda Beauty", price: "1500", img: "images/beauty/eyeliner/Huda Beauty.jpg", desc: "Smooth application with deep black tone."},
+        {name: "Oikel Ixiki", price: "1100", img: "images/beauty/eyeliner/Oikel Ixiki.jpg", desc: "Matte finish with long wear formula."},
+        {name: "Fan Fest", price: "1500", img: "images/beauty/eyeliner/Fan Fest.jpg", desc: "Smooth application with deep black tone."},
+
+      ]
+      };
+
+    // Show similar products
+    const grid = document.getElementById("similarProducts");
+    const similar = allProducts[category] || [];
+    similar.forEach(p => {
+      if (p.name !== name) {
+        const card = document.createElement("div");
+        card.classList.add("product-card");
+        card.innerHTML = `
+          <a href="product.html?name=${encodeURIComponent(p.name)}&price=${p.price}&img=${encodeURIComponent(p.img)}&desc=${encodeURIComponent(p.desc)}&category=${category}">
+            <img src="${p.img}" alt="${p.name}">
+          </a>
+          <h3>${p.name}</h3>
+          <p>KES ${p.price}</p>`;
+        grid.appendChild(card);
+      }
+    });
+  </script>
+</body>
+</html>
